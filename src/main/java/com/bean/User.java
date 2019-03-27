@@ -22,7 +22,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -30,6 +34,10 @@ import lombok.Setter;
 		@UniqueConstraint(columnNames = { "Email" }) })
 @Getter
 @Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
 	@Id
@@ -64,16 +72,6 @@ public class User implements UserDetails {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "UserId"), inverseJoinColumns = @JoinColumn(name = "RoleId"))
 	private Set<Role> roles = new HashSet<>();
-
-	public User() {
-	}
-
-	public User(String name, String username, String email, String password) {
-		this.name = name;
-		this.username = username;
-		this.email = email;
-		this.password = password;
-	}
 
 	
 	@Override
