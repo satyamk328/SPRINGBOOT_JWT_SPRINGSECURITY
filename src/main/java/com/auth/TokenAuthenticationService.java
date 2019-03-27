@@ -75,8 +75,8 @@ public class TokenAuthenticationService {
 		claims.put("userId", u.getUserId() + "");
 		claims.put("roles", u.getRoles());
 
-		final JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setExpiration(expiryDate)
-				.signWith(SignatureAlgorithm.HS512, jwtSecret);
+		final JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(expiryDate).signWith(SignatureAlgorithm.HS512, jwtSecret);
 
 		final String JWT = jwtBuilder.compact();
 		// This is temporary fix to check the datapower flow
@@ -120,10 +120,10 @@ public class TokenAuthenticationService {
 			}
 
 			User u = new User();
-            u.setUsername(claims.getSubject());
-            u.setUserId(Long.parseLong((String) claims.get("userId")));
-            u.setRoles((Set<Role>) claims.get("roles"));
-            
+			u.setUsername(claims.getSubject());
+			u.setUserId(Long.parseLong((String) claims.get("userId")));
+			u.setRoles((Set<Role>) claims.get("roles"));
+
 			if (!jwtDao.checkJwt(token)) {
 				return null;
 			}

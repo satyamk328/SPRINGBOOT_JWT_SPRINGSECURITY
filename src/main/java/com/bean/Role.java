@@ -9,42 +9,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.NaturalId;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "roles")
+@Getter
+@Setter
 public class Role {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="RoleId", unique=true, nullable= false)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "RoleId", unique = true, nullable = false)
 	private Long id;
 
 	@Enumerated(EnumType.STRING)
-	@Column(length = 60, name="RoleName")
+	@Column(length = 60, name = "RoleName")
 	private RoleName name;
-	
 
-	public Role() {
-	}
-
-	public Role(RoleName name) {
-		this.name = name;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public RoleName getName() {
-		return name;
-	}
-
-	public void setName(RoleName name) {
-		this.name = name;
-	}
+	@Column(name = "description")
+	private String description;
 
 }

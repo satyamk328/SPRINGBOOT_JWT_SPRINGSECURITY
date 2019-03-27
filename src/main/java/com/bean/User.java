@@ -2,10 +2,10 @@ package com.bean;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -69,10 +69,9 @@ public class User implements UserDetails {
 	@Column(name="IsActive")
 	private boolean isActive;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "UserId"), inverseJoinColumns = @JoinColumn(name = "RoleId"))
 	private Set<Role> roles;
-
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

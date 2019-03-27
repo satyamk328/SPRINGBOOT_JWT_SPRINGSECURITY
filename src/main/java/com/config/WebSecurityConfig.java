@@ -1,5 +1,6 @@
 package com.config;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.auth.CustomLogoutSuccessHandler;
 import com.auth.JWTLoginFilter;
 import com.auth.JwtAuthenticationFilter;
-import com.auth.RestAuthenticationEntryPoint;
+import com.auth.JwtAuthenticationEntryPoint;
+import com.service.UserDetailsService;
 
 /**
  * Created by rajeevkumarsingh on 01/08/17.
@@ -44,10 +46,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private CustomAuthenticationProvider authProvider;
 
 	@Autowired
-	private RestAuthenticationEntryPoint authenticationEntryPoint;
+	private JwtAuthenticationEntryPoint unauthorizedHandler;
 
 	@Autowired
 	private JwtAuthenticationFilter jwtAuthFilter;
+
+	@Resource(name = "userService")
+	private UserDetailsService userDetailsService;
 
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -55,7 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
 	}
 
-	@Bean(BeanIds.AUTHENTICATION_MANAGER)
+	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
@@ -85,7 +90,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/v2/api-docs", "/swagger-ui.html", "/webjars/**", "/swagger-resources/**")
 				.permitAll();// .hasRole("ADMIN");
 		// If a user try to access a resource without having enough permissions
-		http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
+		http.exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
 		http.logout().logoutUrl("/api/v0/logout").logoutSuccessHandler(customLogouthandler);
 		// Add our custom JWT security filter
 		http.addFilterBefore(jwtLogin, UsernamePasswordAuthenticationFilter.class).addFilterBefore(jwtAuthFilter,
