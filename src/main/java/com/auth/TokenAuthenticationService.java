@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.bean.JwtModel;
+import com.bean.Role;
 import com.bean.User;
 import com.dao.UserDao;
 import com.dao.UserJwtTokenDao;
@@ -71,7 +73,7 @@ public class TokenAuthenticationService {
 
 		Claims claims = Jwts.claims().setSubject(u.getUsername());
 		claims.put("userId", u.getUserId() + "");
-		claims.put("role", u.getRoles());
+		claims.put("roles", u.getRoles());
 
 		final JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setExpiration(expiryDate)
 				.signWith(SignatureAlgorithm.HS512, jwtSecret);
@@ -116,17 +118,16 @@ public class TokenAuthenticationService {
 				log.info(ILLEGAL_ARGUEMENT_EXCEPTION, e);
 				return null;
 			}
-			final String user = claims.getSubject();
 
-			final String userId = claims.getId();
-			final List<String> accountNumbers = (List<String>) claims.get(ACCOUNT_NUMBERS);
-
-			log.debug("Getting Authenticate for the userId = " + userId + "\n\n");
-
+			User u = new User();
+            u.setUsername(claims.getSubject());
+            u.setUserId(Long.parseLong((String) claims.get("userId")));
+            u.setRoles((Set<Role>) claims.get("roles"));
+            
 			if (!jwtDao.checkJwt(token)) {
 				return null;
 			}
-			return user != null ? new UsernamePasswordAuthenticationToken(user, null, emptyList()) : null;
+			return u != null ? new UsernamePasswordAuthenticationToken(u, null, emptyList()) : null;
 		}
 		return null;
 	}
