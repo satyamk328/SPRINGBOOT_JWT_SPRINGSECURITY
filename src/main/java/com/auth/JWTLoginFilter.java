@@ -37,7 +37,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter
 	static String url = "/api/v0/login";
 
 	@Autowired
-	AuthenticationManager authManager;
+	private AuthenticationManager authManager;
 
 	private ApplicationContext ctx;
 

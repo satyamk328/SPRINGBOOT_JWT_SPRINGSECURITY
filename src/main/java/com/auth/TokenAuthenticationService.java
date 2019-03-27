@@ -60,9 +60,9 @@ public class TokenAuthenticationService {
 
 	public String addAuthentication(final HttpServletResponse res, final String username,
 			final HttpServletRequest req) {
-		Long userId = userDao.getIdByName(username);
-		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		final User userDetails = (User) authentication.getPrincipal();
+		Long userId = 0L;//consumerDao.getIdByName(username);
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final User userDetails = (User) authentication.getPrincipal();
 		if (userId == null) {
 			userId = userDetails.getUserId();
 		}
@@ -94,7 +94,6 @@ public class TokenAuthenticationService {
 
 		if (token != null && token.contains(BEARER_TOKEN_PREFIX)) {
 			token = getAuthenticationToken(token);
-
 			// parse the token.
 			Claims claims;
 			try {
@@ -126,12 +125,23 @@ public class TokenAuthenticationService {
 			if (!jwtDao.checkJwt(token)) {
 				return null;
 			}
-			return user != null ? new UsernamePasswordAuthenticationToken(user, null, emptyList())
-					: null;
+			return user != null ? new UsernamePasswordAuthenticationToken(user, null, emptyList()) : null;
 		}
 		return null;
 	}
 
+	public String getAuthenticationToken(String token) {
+        final String[] tokenArray = token.split(",");
+        if (tokenArray.length > 1) {
+            // In case of Data Power the second token will belong to ssc.
+            token = tokenArray[1];
+            if (!token.contains(BEARER_TOKEN_PREFIX)) {
+                token = BEARER_TOKEN_PREFIX + " " + token;
+            }
+        }
+        return token;
+    }
+	
 	public static long getExpirationTime() {
 		return expirationTime;
 	}
@@ -151,23 +161,9 @@ public class TokenAuthenticationService {
 				log.debug("Error parsing Jwt Token", e);
 			}
 		}
-
 		return user;
-
 	}
 
-	public String getAuthenticationToken(String token) {
-        final String[] tokenArray = token.split(",");
-        if (tokenArray.length > 1) {
-            // In case of Data Power the second token will belong to ssc.
-            token = tokenArray[1];
-            if (!token.contains(BEARER_TOKEN_PREFIX)) {
-                token = BEARER_TOKEN_PREFIX + " " + token;
-            }
-        }
-        return token;
-    }
-	
 	public Long getUserId(final HttpServletRequest req) {
 		String userId = null;
 		final String token = req.getHeader(AUTHORIZATION_HEADER);
