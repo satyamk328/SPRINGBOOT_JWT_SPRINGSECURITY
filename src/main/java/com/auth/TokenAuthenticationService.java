@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TokenAuthenticationService {
 
 	private static long expirationTime = 30; // 30 minutes
-	@Value("${jwt.encrption.secret}")
+	@Value("${jwt.secret}")
 	private String jwtSecret;
 
 	static final String AUTHORIZATION_HEADER = "Authorization";
@@ -58,25 +58,26 @@ public class TokenAuthenticationService {
 	private static final String JWT_SIGNATURE_MISMATCH = "Jwt Signature mismatch";
 	private static final String ILLEGAL_ARGUEMENT_EXCEPTION = "Illegal Arguement Exception";
 
-	public String addAuthentication(final HttpServletResponse res, final String username,
-			final HttpServletRequest req) {
-		Long userId = 0L;//consumerDao.getIdByName(username);
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final User userDetails = (User) authentication.getPrincipal();
+	public String generateToken(final User u) {
+		Long userId = 0L;// consumerDao.getIdByName(username);
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final User userDetails = (User) authentication.getPrincipal();
 		if (userId == null) {
 			userId = userDetails.getUserId();
 		}
 
-		final String sessionId = req.getSession().getId();
-		log.debug("\n\n\nSession Id getting saved is: " + sessionId);
 		log.debug("Adding UserId to Jwt for userId = " + userId + "\n\n");
 		Date expiryDate = new Date(System.currentTimeMillis() + (expirationTime * 60 * 1000));
-		final JwtBuilder jwtBuilder = Jwts.builder().setSubject(username).setId("" + userId).setExpiration(expiryDate)
+
+		Claims claims = Jwts.claims().setSubject(u.getUsername());
+		claims.put("userId", u.getUserId() + "");
+		claims.put("role", u.getRoles());
+
+		final JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setExpiration(expiryDate)
 				.signWith(SignatureAlgorithm.HS512, jwtSecret);
 
 		final String JWT = jwtBuilder.compact();
 		// This is temporary fix to check the datapower flow
-		res.addHeader(AUTHORIZATION_HEADER, BEARER_TOKEN_PREFIX + " dp-jwt-token");
 		final JwtModel jwtModel = new JwtModel();
 		jwtModel.setToken(BEARER_TOKEN_PREFIX + " " + JWT);
 		jwtModel.setIssueTime(new Date());
@@ -131,17 +132,17 @@ public class TokenAuthenticationService {
 	}
 
 	public String getAuthenticationToken(String token) {
-        final String[] tokenArray = token.split(",");
-        if (tokenArray.length > 1) {
-            // In case of Data Power the second token will belong to ssc.
-            token = tokenArray[1];
-            if (!token.contains(BEARER_TOKEN_PREFIX)) {
-                token = BEARER_TOKEN_PREFIX + " " + token;
-            }
-        }
-        return token;
-    }
-	
+		final String[] tokenArray = token.split(",");
+		if (tokenArray.length > 1) {
+			// In case of Data Power the second token will belong to ssc.
+			token = tokenArray[1];
+			if (!token.contains(BEARER_TOKEN_PREFIX)) {
+				token = BEARER_TOKEN_PREFIX + " " + token;
+			}
+		}
+		return token;
+	}
+
 	public static long getExpirationTime() {
 		return expirationTime;
 	}

@@ -10,7 +10,6 @@ public class ProfileVO {
 	private String user;
 	private String status;
 	private String type;
-	private String theme;
 	private Object userContext;
 	private String locale;
 	private String timeZone;

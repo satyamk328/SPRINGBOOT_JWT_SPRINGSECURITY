@@ -41,7 +41,7 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
 		response.setHeader("Content-Type", "application/json");
 		response.setHeader("Access-Control-Expose-Headers", "Authentication");
 		try {
-			String jwt = authenticationService.addAuthentication(response, authentication.getName(), request);
+			String jwt = authenticationService.generateToken((com.bean.User) authentication.getPrincipal());
 
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			User user = (User) auth.getPrincipal();
@@ -69,7 +69,6 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
 			log.info("Login Response : " + result);
 			writer.write(mapper.writeValueAsString(responseObj));
 			writer.flush();
-
 		} catch (Exception e) {
 			log.error("Unable to complete authentication Success ", e);
 			// loggingHandler.handleException("Unable to complete authentication Success ",
