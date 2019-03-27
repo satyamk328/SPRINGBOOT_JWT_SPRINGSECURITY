@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import com.bean.ProfileVO;
@@ -26,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class AuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class AuthSuccessHandler implements AuthenticationSuccessHandler {
 
 	public static final ObjectMapper mapper = new ObjectMapper();
 
@@ -35,8 +34,9 @@ public class AuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHa
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-			Authentication authentication) throws IOException, ServletException {
-
+			Authentication authentication) {
+		// We do not need to do anything extra on REST authentication success, because
+		// there is no page to redirect to
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setHeader("Content-Type", "application/json");
 		response.setHeader("Access-Control-Expose-Headers", "Authentication");

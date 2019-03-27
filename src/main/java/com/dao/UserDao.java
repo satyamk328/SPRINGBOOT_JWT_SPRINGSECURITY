@@ -1,14 +1,13 @@
 package com.dao;
 
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.bean.User;
 
-public class UserDao {
+public interface UserDao extends JpaRepository<User, Long>{
 
-	public User getConsumerLoginModelByName(final String consumerName) {
-		return null;
-	}
+    Optional<User> findByUsername(String username);
 
-	public Long getIdByName(String userName) {
-		return 0L;
-	}
 }

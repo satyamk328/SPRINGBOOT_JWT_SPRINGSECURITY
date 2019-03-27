@@ -65,13 +65,13 @@ public class User implements UserDetails {
 	@Column(name="Country")
 	private String country;
 	@Column(name="IsLock")
-	private boolean isLock = false;
+	private boolean isLock;
 	@Column(name="IsActive")
-	private boolean isActive = true;
+	private boolean isActive;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "UserId"), inverseJoinColumns = @JoinColumn(name = "RoleId"))
-	private Set<Role> roles = new HashSet<>();
+	private Set<Role> roles;
 
 	
 	@Override
@@ -92,17 +92,17 @@ public class User implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override

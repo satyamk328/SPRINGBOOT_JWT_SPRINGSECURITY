@@ -19,8 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.auth.CustomLogoutSuccessHandler;
 import com.auth.JWTLoginFilter;
-import com.auth.JwtAuthenticationEntryPoint;
 import com.auth.JwtAuthenticationFilter;
+import com.auth.RestAuthenticationEntryPoint;
 
 /**
  * Created by rajeevkumarsingh on 01/08/17.
@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private CustomAuthenticationProvider authProvider;
 
 	@Autowired
-	private JwtAuthenticationEntryPoint authenticationEntryPoint;
+	private RestAuthenticationEntryPoint authenticationEntryPoint;
 
 	@Autowired
 	private JwtAuthenticationFilter jwtAuthFilter;
