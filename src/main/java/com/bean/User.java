@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,22 +26,43 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }),
-		@UniqueConstraint(columnNames = { "email" }) })
+@Table(name = "user_master", uniqueConstraints = { @UniqueConstraint(columnNames = { "UserName" }),
+		@UniqueConstraint(columnNames = { "Email" }) })
 @Getter
 @Setter
 public class User implements UserDetails {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="UserId", nullable=false, unique=true)
 	private Long userId;
+	@Column(name="Name")
 	private String name;
+	@Column(name="UserName")
 	private String username;
+	@Column(name="Email")
 	private String email;
+	@Column(name="Password")
 	private String password;
+	@Column(name="Address")
+	private String address;
+	@Column(name="PanNumber")
+	private String panNumber;
+	@Column(name="PhoneNumber")
+	private String phoneNumber;
+	@Column(name="City")
+	private String city;
+	@Column(name="State")
+	private String state;
+	@Column(name="Country")
+	private String country;
+	@Column(name="IsLock")
+	private boolean isLock = false;
+	@Column(name="IsActive")
+	private boolean isActive = true;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "UserId"), inverseJoinColumns = @JoinColumn(name = "RoleId"))
 	private Set<Role> roles = new HashSet<>();
 
 	public User() {
@@ -58,8 +80,8 @@ public class User implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		final List<GrantedAuthority> authorities = new ArrayList<>();
 		try {
-			for (final Role privilege : roles) {
-				authorities.add(new SimpleGrantedAuthority(privilege.getName().name()));
+			for (final Role role : roles) {
+				authorities.add(new SimpleGrantedAuthority(role.getName().name()));
 			}
 		} catch (final Exception e) {
 			authorities.add(new SimpleGrantedAuthority("USER"));
@@ -87,7 +109,7 @@ public class User implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return false;
+		return this.isLock;
 	}
 
 	@Override

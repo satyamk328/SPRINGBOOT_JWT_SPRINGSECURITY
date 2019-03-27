@@ -1,6 +1,5 @@
 package com.auth;
 
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -18,10 +17,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.bean.ProfileVO;
 import com.erp.spring.model.RestResponse;
 import com.erp.spring.model.RestStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.model.ProfileVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,30 +29,30 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
 	public static final ObjectMapper mapper = new ObjectMapper();
-	
+
 	@Autowired
 	private TokenAuthenticationService authenticationService;
-	
+
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setHeader("Content-Type", "application/json");
+		response.setHeader("Access-Control-Expose-Headers", "Authentication");
 		try {
 			String jwt = authenticationService.addAuthentication(response, authentication.getName(), request);
 
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			User user = (User) auth.getPrincipal();
-			
+
 			List<String> userRoles = new ArrayList<>();
 			for (GrantedAuthority o : user.getAuthorities()) {
 				userRoles.add(o.getAuthority());
 			}
 
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setHeader("Content-Type", "application/json");
-
 			ProfileVO profile = new ProfileVO();
-			
+
 			profile.setUser(user.getUsername());
 			profile.setStatus("SUCCESS");
 			profile.setType(user.getAuthorities().toArray()[0].toString());
@@ -73,7 +72,25 @@ public class AuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHa
 
 		} catch (Exception e) {
 			log.error("Unable to complete authentication Success ", e);
-			//loggingHandler.handleException("Unable to complete authentication Success ", e);
+			// loggingHandler.handleException("Unable to complete authentication Success ",
+			// e);
 		}
+	}
+
+	public void populateNagativeResponse(final HttpServletResponse response, final String cmsMessageKey) {
+		try {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			final PrintWriter writer = response.getWriter();
+			final RestResponse<String> responseObj = new RestResponse<>(null,
+					new RestStatus<>("UNAUTHORIZED", "Incorrect Email ID/ User ID and Password error message"));
+			final String result = mapper.writeValueAsString(responseObj);
+			log.info("Login Response : " + result);
+			writer.write(result);
+			writer.flush();
+		} catch (final IOException e) {
+			log.error("Unable to complete the login failure", e);
+			// dbLoggingHandler.handleException("Unable to complete the login failure", e);
+		}
+
 	}
 }

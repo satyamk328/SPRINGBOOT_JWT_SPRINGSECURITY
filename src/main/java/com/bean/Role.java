@@ -16,11 +16,13 @@ import org.hibernate.annotations.NaturalId;
 public class Role {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="RoleId", unique=true, nullable= false)
 	private Long id;
 
 	@Enumerated(EnumType.STRING)
-	@Column(length = 60)
+	@Column(length = 60, name="RoleName")
 	private RoleName name;
+	
 
 	public Role() {
 	}
