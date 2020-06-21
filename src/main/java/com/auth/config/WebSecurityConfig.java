@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder(256);
+		return new BCryptPasswordEncoder();
 	}
 
 	@Override
@@ -74,16 +74,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		// Entry points
 		http.authorizeRequests()//
-				.antMatchers("/api/v0/users/signin").permitAll()//
-				.antMatchers("/api/v0/users/signup").permitAll()//
+				.antMatchers("/api/v0/login").permitAll()//
+				.antMatchers("/api/v0/user/signup").permitAll()//
 				// Disallow everything else..
 				.anyRequest().authenticated();
-		// UI related
-		http.authorizeRequests().antMatchers("/", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg",
-				"/**/*.html", "/**/*.css", "/**/*.js").permitAll();
 		// Allow access to swagger only for Admin rule
-		http.authorizeRequests().antMatchers("/v2/api-docs", "/swagger-ui.html", "/webjars/**", "/swagger-resources/**")
-				.permitAll();// .hasRole("ADMIN");
 		// If a user try to access a resource without having enough permissions
 		http.exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
 		http.logout().logoutUrl("/api/v0/logout").logoutSuccessHandler(customLogouthandler);

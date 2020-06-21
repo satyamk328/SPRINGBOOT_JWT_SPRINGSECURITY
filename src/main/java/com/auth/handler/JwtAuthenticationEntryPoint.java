@@ -33,6 +33,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		// supplying any credentials
 		// We should just send a 401 Unauthorized response because there is no 'login
 		// page' to redirect to
+		httpServletResponse.setHeader("Content-Type", "application/json");
 		log.error("Responding with unauthorized error. Message - {}", authException.getMessage());
 		httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 

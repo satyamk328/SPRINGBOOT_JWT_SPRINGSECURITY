@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.auth.bean.User;
@@ -19,7 +20,7 @@ public class UserDetailsImpl implements org.springframework.security.core.userde
 	private UserDao userDao;
 
 	@Autowired
-	private BCryptPasswordEncoder bcryptEncoder;
+	private PasswordEncoder bcryptEncoder;
 
 	@Override
 	public UserDetails loadUserByUsername(final String username) {
