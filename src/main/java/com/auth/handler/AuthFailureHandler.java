@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.auth.bean.User;
 import com.auth.exception.UnAuthorizedException;
-import com.auth.service.UserDetailsService;
+import com.auth.service.UserDetailsImpl;
 import com.auth.spring.model.RestResponse;
 import com.auth.spring.model.RestStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +28,7 @@ public class AuthFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 	public static final ObjectMapper mapper = new ObjectMapper();
 
 	@Autowired
-	private UserDetailsService userDetailsService;
+	private UserDetailsImpl userDetailsService;
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,

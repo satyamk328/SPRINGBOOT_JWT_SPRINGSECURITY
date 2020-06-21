@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth.bean.User;
-import com.auth.service.UserDetailsService;
+import com.auth.service.UserDetailsImpl;
 import com.auth.spring.model.RestResponse;
 import com.auth.spring.model.RestStatus;
 
@@ -23,7 +23,7 @@ import com.auth.spring.model.RestStatus;
 public class UserController {
 
 	@Autowired
-	private UserDetailsService userService;
+	private UserDetailsImpl userService;
 
 	//@Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PreAuthorize("hasRole('ADMIN')")

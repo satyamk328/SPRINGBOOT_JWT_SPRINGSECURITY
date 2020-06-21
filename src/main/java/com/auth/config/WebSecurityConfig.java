@@ -1,13 +1,11 @@
 package com.auth.config;
 
 import javax.annotation.Resource;
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,10 +20,10 @@ import com.auth.handler.CustomLogoutSuccessHandler;
 import com.auth.handler.JWTLoginFilter;
 import com.auth.handler.JwtAuthenticationEntryPoint;
 import com.auth.handler.JwtAuthenticationFilter;
-import com.auth.service.UserDetailsService;
+import com.auth.service.UserDetailsImpl;
 
 /**
- * Created by rajeevkumarsingh on 01/08/17.
+ * Created by Satyam Kumar.
  */
 
 @Configuration
@@ -35,9 +33,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private CustomLogoutSuccessHandler customLogouthandler;
-
-	@Autowired
-	private DataSource dataSource;
 
 	@Autowired
 	private JWTLoginFilter jwtLogin;
@@ -52,12 +47,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private JwtAuthenticationFilter jwtAuthFilter;
 
 	@Resource(name = "userService")
-	private UserDetailsService userDetailsService;
+	private UserDetailsImpl userDetailsService;
 
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(authProvider);
-		// auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
+		//auth.authenticationProvider(authProvider);
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 
 	@Bean

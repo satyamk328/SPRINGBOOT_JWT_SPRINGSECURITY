@@ -17,7 +17,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Created by rajeevkumarsingh on 19/08/17.
+ * Created by Satyam.
  */
 
 @Component
@@ -26,9 +26,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
 	@Autowired
 	private TokenAuthenticationService authenticationService;
-
-	// @Autowired
-	// private DBLoggingHandler dbLoggingHandler;
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)

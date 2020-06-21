@@ -4,10 +4,8 @@ import static java.util.Collections.emptyList;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Component;
 import com.auth.bean.JwtModel;
 import com.auth.bean.Role;
 import com.auth.bean.User;
-import com.auth.repository.UserDao;
 import com.auth.repository.UserJwtTokenDao;
 
 import io.jsonwebtoken.Claims;
@@ -33,7 +30,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Created by rajeevkumarsingh on 19/08/17.
+ * Created by Satyam Kumar.
  */
 @Component
 @Slf4j
@@ -51,9 +48,6 @@ public class TokenAuthenticationService {
 	@Autowired
 	private UserJwtTokenDao jwtDao;
 
-	@Autowired
-	private UserDao userDao;
-
 	private static final String UNSUPPORTED_JWT_TOKEN = "Unsupported Jwt token";
 	private static final String MALFORMED_JWT_TOKEN = "Malformed Jwt token";
 	private static final String JWT_TOKEN_EXPIRED = "Jwt token expired";
@@ -65,14 +59,14 @@ public class TokenAuthenticationService {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final User userDetails = (User) authentication.getPrincipal();
 		if (userId == null) {
-			userId = userDetails.getUserId();
+			userId = userDetails.getId();
 		}
 
 		log.debug("Adding UserId to Jwt for userId = " + userId + "\n\n");
 		Date expiryDate = new Date(System.currentTimeMillis() + (expirationTime * 60 * 1000));
 
 		Claims claims = Jwts.claims().setSubject(u.getUsername());
-		claims.put("userId", u.getUserId() + "");
+		claims.put("userId", u.getId() + "");
 		claims.put("roles", u.getRoles());
 
 		final JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setIssuedAt(new Date(System.currentTimeMillis()))
@@ -121,8 +115,8 @@ public class TokenAuthenticationService {
 
 			User u = new User();
 			u.setUsername(claims.getSubject());
-			u.setUserId(Long.parseLong((String) claims.get("userId")));
-			u.setRoles((Set<Role>) claims.get("roles"));
+			u.setId(Long.parseLong((String) claims.get("userId")));
+			u.setRoles((List<Role>) claims.get("roles"));
 
 			if (!jwtDao.checkJwt(token)) {
 				return null;

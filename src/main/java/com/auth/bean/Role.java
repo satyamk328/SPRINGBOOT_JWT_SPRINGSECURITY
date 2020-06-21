@@ -1,32 +1,39 @@
 package com.auth.bean;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
-@Table(name = "roles")
+
 @Getter
 @Setter
+@Entity
+@Table(name = "role_master")
 public class Role {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "RoleId", unique = true, nullable = false)
+	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
 
-	@Enumerated(EnumType.STRING)
-	@Column(length = 60, name = "RoleName")
-	private RoleName name;
+	@Column(length = 60, name = "name")
+	private String name;
 
 	@Column(name = "description")
 	private String description;
 
+	@JsonIgnore
+	@ManyToMany
+	private List<User> users;
 }

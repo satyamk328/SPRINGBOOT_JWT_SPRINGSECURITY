@@ -1,9 +1,7 @@
 package com.auth.bean;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,11 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,93 +22,56 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "user_master", uniqueConstraints = { @UniqueConstraint(columnNames = { "UserName" }),
-		@UniqueConstraint(columnNames = { "Email" }) })
+
 @Getter
 @Setter
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
+@Entity
+@Table(name = "user_master")
+public class User implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="UserId", nullable=false, unique=true)
-	private Long userId;
-	@Column(name="Name")
+	@Column(name="id", nullable=false, unique=true)
+	private Long id;
+	
+	@Column(name="name")
 	private String name;
-	@Column(name="UserName")
+	
+	@Column(name="username")
 	private String username;
-	@Column(name="Email")
+	
+	@Column(name="email")
 	private String email;
-	@Column(name="Password")
+	
+	@Column(name="password")
 	private String password;
-	@Column(name="Address")
+	
+	@Column(name="address")
 	private String address;
-	@Column(name="PanNumber")
-	private String panNumber;
-	@Column(name="PhoneNumber")
-	private String phoneNumber;
-	@Column(name="City")
+	
+	@Column(name="city")
 	private String city;
-	@Column(name="State")
+	
+	@Column(name="state")
 	private String state;
-	@Column(name="Country")
+	
+	@Column(name="country")
 	private String country;
-	@Column(name="IsLock")
+	
+	@Column(name="is_lock")
 	private boolean isLock;
-	@Column(name="IsActive")
+	
+	@Column(name="is_active")
 	private boolean isActive;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "UserId"), inverseJoinColumns = @JoinColumn(name = "RoleId"))
-	private Set<Role> roles;
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private List<Role> roles;
 	
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		final List<GrantedAuthority> authorities = new ArrayList<>();
-		try {
-			for (final Role role : roles) {
-				authorities.add(new SimpleGrantedAuthority(role.getName().name()));
-			}
-		} catch (final Exception e) {
-			authorities.add(new SimpleGrantedAuthority("USER"));
-		}
-		if (authorities.size() == 0) {
-			authorities.add(new SimpleGrantedAuthority("USER"));
-		}
-		return authorities;
-	}
-
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return this.isLock;
-	}
-
-	@Override
-	public String getPassword() {
-		return this.password;
-	}
-
-	@Override
-	public String getUsername() {
-		return this.username;
-	}
 }

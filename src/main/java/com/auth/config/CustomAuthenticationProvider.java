@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class CustomAuthenticationProvider implements AuthenticationProvider {
+	
 	// @Autowired
 	// LdapAuthentication ldapLogin;
 
@@ -45,7 +46,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		for (Role role : roles) {
 			log.debug("Role :{}", role.getId());
 			SimpleGrantedAuthority grantedAuths = new SimpleGrantedAuthority(
-					role.getName().name().trim().toUpperCase());
+					role.getName().trim().toUpperCase());
 			grantedAuthList.add(grantedAuths);
 		}
 		User user = null;
