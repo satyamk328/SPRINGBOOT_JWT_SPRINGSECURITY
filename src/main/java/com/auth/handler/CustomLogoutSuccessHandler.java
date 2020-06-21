@@ -12,8 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.auth.bean.JwtModel;
-import com.auth.repository.UserJwtTokenDao;
 import com.auth.spring.model.RestResponse;
 import com.auth.spring.model.RestStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,9 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
-	@Autowired
-    private UserJwtTokenDao jwtDao;
-	
 	@Autowired
 	private TokenAuthenticationService tokenService;
 
@@ -41,11 +36,10 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             if (token != null && token.contains(TokenAuthenticationService.BEARER_TOKEN_PREFIX)) {
                 token = tokenService.getAuthenticationToken(token);
 
-                final JwtModel jwtModel = new JwtModel();
+               /* final JwtModel jwtModel = new JwtModel();
                 jwtModel.setToken(token);
                 jwtModel.setValid(false);
-                jwtDao.updateJwtIsValid(jwtModel);
-                logEvent(httpServletRequest,true);
+                jwtDao.updateJwtIsValid(jwtModel);*/
             }
 
             if (authentication != null && authentication.getDetails() != null) {
@@ -56,7 +50,6 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             
         } catch (final Exception e) {
             httpServletRequest.getSession().invalidate();
-            logEvent(httpServletRequest,false);
         }
 
         final PrintWriter writer = httpServletResponse.getWriter();
@@ -69,17 +62,5 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     }
 
-	private void logEvent(final HttpServletRequest httpServletRequest, boolean flag) {
-		Long consumerID = tokenService.getUserId(httpServletRequest);
-		if (consumerID != null) {
-			if (flag) {
-				/*consumerActionService.addLogoutSuccessEventAction(tokenService.getUserId(httpServletRequest),
-						tokenService.getUserName(httpServletRequest));*/
-			} else {
-				/*consumerActionService.addLogoutFailEventAction(tokenService.getUserId(httpServletRequest),
-						tokenService.getUserName(httpServletRequest));*/
-			}
-		}
-	}
 
 }

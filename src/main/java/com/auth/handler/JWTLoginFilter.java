@@ -67,21 +67,17 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter
 		if (cred != null && cred.length == 2) {
 			Authentication auth = getAuthenticationManager()
 					.authenticate(new UsernamePasswordAuthenticationToken(cred[0], cred[1], Collections.emptyList()));
-			getAuthenticationManager().authenticate(auth);
 			return auth;
 		} else {
-			throw new BadCredentialsException("No JWT token found in request headers");
+			throw new BadCredentialsException("Missing Basic Authorisation Header");
 		}
 	}
 
 	@Override
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-			Authentication authResult) throws IOException, ServletException {
-		super.successfulAuthentication(request, response, chain, authResult);
-		// As this authentication is in HTTP header, after success we need to continue
-		// the request normally
-		// and return the response as if the resource was not secured at all
-		// chain.doFilter(request, response);
+	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
+			Authentication auth) throws IOException, ServletException {
+		super.successfulAuthentication(req, res, chain, auth);
+
 	}
 
 	public static String[] getBasicCred(HttpServletRequest req) {

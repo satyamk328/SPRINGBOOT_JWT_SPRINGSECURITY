@@ -3,10 +3,10 @@ package com.auth.exception;
 import org.springframework.security.core.AuthenticationException;
 
 public class UnAuthorizedException  extends AuthenticationException {
-    // ~ Constructors
-    // ===================================================================================================
 
-    /**
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Constructs a <code>BadCredentialsException</code> with the specified message.
      *
      * @param msg the detail message

@@ -45,7 +45,9 @@ public class UserPrincipal implements UserDetails, Serializable {
 
 	public static UserPrincipal build(User user) {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+				.map(role -> new SimpleGrantedAuthority(
+						role.getName().startsWith("ROLE_") ? role.getName().toUpperCase() : "ROLE_" + role.getName().toUpperCase()))
+				.collect(Collectors.toList());
 
 		return new UserPrincipal(user.getId(), user.getName(), user.getUsername(), user.getPassword(), user.getRoles(),
 				authorities);
@@ -66,22 +68,22 @@ public class UserPrincipal implements UserDetails, Serializable {
 		return authorities;
 	}
 
-	@Override 
+	@Override
 	public boolean isAccountNonExpired() {
 		return true;
 	}
 
-	@Override 
+	@Override
 	public boolean isAccountNonLocked() {
 		return true;
 	}
 
-	@Override 
+	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
 
-	@Override 
+	@Override
 	public boolean isEnabled() {
 		return true;
 	}
@@ -92,10 +94,10 @@ public class UserPrincipal implements UserDetails, Serializable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		UserPrincipal that = (UserPrincipal) o;
-		return Objects.equals(id, that.id);
+		UserPrincipal user = (UserPrincipal) o;
+		return Objects.equals(id, user.id);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);

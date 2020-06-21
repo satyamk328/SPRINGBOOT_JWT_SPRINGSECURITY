@@ -4,20 +4,20 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.auth.bean.User;
 import com.auth.bean.UserPrincipal;
-import com.auth.repository.UserDao;
+import com.auth.repository.UserRepository;
 
 @Service(value = "userService")
-public class UserDetailsImpl implements org.springframework.security.core.userdetails.UserDetailsService {
+public class UserDetailsImpl implements UserDetailsService , UserService {
 
 	@Autowired
-	private UserDao userDao;
+	private UserRepository userDao;
 
 	@Autowired
 	private PasswordEncoder bcryptEncoder;
@@ -46,6 +46,13 @@ public class UserDetailsImpl implements org.springframework.security.core.userde
 		user.setPassword(bcryptEncoder.encode(user.getPassword()));
 		userDao.save(user);
 		return user;
+	}
+
+
+	@Override
+	public User findByName(String username) {
+		return this.userDao.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"));
 	}
 
 }

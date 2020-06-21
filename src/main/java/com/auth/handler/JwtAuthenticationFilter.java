@@ -35,8 +35,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		} catch (Exception ex) {
 			log.error("Exception Setting Authentication Context", ex);
-			// dbLoggingHandler.handleException("Exception Setting Authentication Context",
-			// ex);
 		}
 		filterChain.doFilter(request, response);
 	}

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,9 +39,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private JWTLoginFilter jwtLogin;
 
 	@Autowired
-	private CustomAuthenticationProvider authProvider;
-
-	@Autowired
 	private JwtAuthenticationEntryPoint unauthorizedHandler;
 
 	@Autowired
@@ -49,21 +47,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Resource(name = "userService")
 	private UserDetailsImpl userDetailsService;
 
-	@Override
-	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		//auth.authenticationProvider(authProvider);
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+	@Autowired
+	public void configAuthentication(final AuthenticationManagerBuilder auth) throws Exception {
+		final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setUserDetailsService(userDetailsService);
+		provider.setPasswordEncoder(passwordEncoder());
+		provider.afterPropertiesSet();
+		auth.authenticationProvider(provider);
 	}
 
+
+	@Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
 	}
 
 	@Override
@@ -74,7 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		// Entry points
 		http.authorizeRequests()//
-				.antMatchers("/api/v0/login").permitAll()//
+				//.antMatchers("/api/v0/login").permitAll()//
 				.antMatchers("/api/v0/user/signup").permitAll()//
 				// Disallow everything else..
 				.anyRequest().authenticated();
